@@ -1,0 +1,39 @@
+/* Custom CSS for Navbar and Sidebar */
+.nav-custom {
+    background-color: #9a9a69;
+    border-bottom: 1px solid #9a9a69;
+}
+
+.sidebar-custom {
+    background-color: #9a9a69;
+    border-right: 1px solid #9a9a69;
+}
+
+.sidebar-custom .nav-link {
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.sidebar-custom .nav-link:hover {
+    background-color: #9a9a69;
+}
+
+.sidebar-custom .nav-icon {
+    color: #d9f99d;
+}
+
+.sidebar-custom .nav-link:hover .nav-icon {
+    color: white;
+}
+
+.nav-custom .brand-text {
+    color: white;
+}
+
+.toggle-button {
+    color: white;
+}
+
+.toggle-button:hover {
+    background-color: #84cc16;
+} 
