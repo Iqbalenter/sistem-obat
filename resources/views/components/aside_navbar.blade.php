@@ -30,7 +30,10 @@
               $soonExpiredCount = \App\Models\Obat::where('tanggal_expired', '>=', \Carbon\Carbon::today())
                                                   ->where('tanggal_expired', '<=', \Carbon\Carbon::today()->addDays(7))
                                                   ->count();
-              $totalNotifications = $expiredCount + $soonExpiredCount;
+              $threeMonthsExpiredCount = \App\Models\Obat::where('tanggal_expired', '>', \Carbon\Carbon::today()->addDays(7))
+                                                          ->where('tanggal_expired', '<=', \Carbon\Carbon::today()->addDays(90))
+                                                          ->count();
+              $totalNotifications = $expiredCount + $soonExpiredCount + $threeMonthsExpiredCount;
             @endphp
             
             @if($totalNotifications > 0)
@@ -71,7 +74,7 @@
                   </div>
                   
                   @foreach($expiredObats as $obat)
-                    <div class="px-4 py-3 hover:bg-gray-50 border-b border-gray-100 transition-colors duration-150">
+                    <a href="/obat" class="block px-4 py-3 hover:bg-red-50 border-b border-gray-100 transition-colors duration-150 cursor-pointer">
                       <div class="flex items-start space-x-3">
                         <div class="flex-shrink-0">
                           <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
@@ -85,9 +88,15 @@
                           <p class="text-xs text-gray-500">{{ $obat->kategori->nama_kategori ?? 'Tidak ada kategori' }}</p>
                           <p class="text-xs text-red-600 font-medium">Expired: {{ $obat->tanggal_expired->format('d M Y') }}</p>
                           <p class="text-xs text-gray-500">Stok: {{ $obat->stok }} unit</p>
+                          <div class="flex items-center mt-1">
+                            <svg class="w-3 h-3 text-gray-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-xs text-gray-400">Klik untuk detail</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    </a>
                   @endforeach
                 @endif
 
@@ -110,7 +119,7 @@
                   </div>
                   
                   @foreach($soonExpiredObats as $obat)
-                    <div class="px-4 py-3 hover:bg-gray-50 border-b border-gray-100 transition-colors duration-150">
+                    <a href="/obat" class="block px-4 py-3 hover:bg-yellow-50 border-b border-gray-100 transition-colors duration-150 cursor-pointer">
                       <div class="flex items-start space-x-3">
                         <div class="flex-shrink-0">
                           <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
@@ -124,10 +133,69 @@
                           <p class="text-xs text-gray-500">{{ $obat->kategori->nama_kategori ?? 'Tidak ada kategori' }}</p>
                           <p class="text-xs text-yellow-600 font-medium">Expired: {{ $obat->tanggal_expired->format('d M Y') }}</p>
                           <p class="text-xs text-gray-500">Stok: {{ $obat->stok }} unit</p>
+                          @php
+                            $daysUntilExpired = \Carbon\Carbon::today()->diffInDays($obat->tanggal_expired);
+                          @endphp
+                          <p class="text-xs text-yellow-500">{{ $daysUntilExpired }} hari lagi</p>
+                          <div class="flex items-center mt-1">
+                            <svg class="w-3 h-3 text-gray-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-xs text-gray-400">Klik untuk detail</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    </a>
                   @endforeach
+                @endif
+
+                <!-- Three Months Expired Notifications -->
+                @if($threeMonthsExpiredCount > 0)
+                  @php
+                    $threeMonthsExpiredObats = \App\Models\Obat::with('kategori')
+                                                               ->where('tanggal_expired', '>', \Carbon\Carbon::today()->addDays(7))
+                                                               ->where('tanggal_expired', '<=', \Carbon\Carbon::today()->addDays(90))
+                                                               ->orderBy('tanggal_expired', 'asc')
+                                                               ->limit(5)
+                                                               ->get();
+                  @endphp
+                  
+                  <div class="px-4 py-2 bg-blue-50 border-b border-blue-100">
+                    <h4 class="text-sm font-medium text-blue-800 flex items-center">
+                      <span class="w-2 h-2 bg-blue-500 rounded-full mr-2 animate-pulse"></span>
+                      Akan Expired (3 bulan) ({{ $threeMonthsExpiredCount }})
+                    </h4>
+                  </div>
+                  
+                                     @foreach($threeMonthsExpiredObats as $obat)
+                     <a href="/obat" class="block px-4 py-3 hover:bg-blue-50 border-b border-gray-100 transition-colors duration-150 cursor-pointer">
+                       <div class="flex items-start space-x-3">
+                         <div class="flex-shrink-0">
+                           <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                             <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                               <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                             </svg>
+                           </div>
+                         </div>
+                         <div class="flex-1 min-w-0">
+                           <p class="text-sm font-medium text-gray-900 truncate">{{ $obat->nama_obat }}</p>
+                           <p class="text-xs text-gray-500">{{ $obat->kategori->nama_kategori ?? 'Tidak ada kategori' }}</p>
+                           <p class="text-xs text-blue-600 font-medium">Expired: {{ $obat->tanggal_expired->format('d M Y') }}</p>
+                           <p class="text-xs text-gray-500">Stok: {{ $obat->stok }} unit</p>
+                           @php
+                             $daysUntilExpired = \Carbon\Carbon::today()->diffInDays($obat->tanggal_expired);
+                           @endphp
+                           <p class="text-xs text-blue-500">{{ $daysUntilExpired }} hari lagi</p>
+                           <div class="flex items-center mt-1">
+                             <svg class="w-3 h-3 text-gray-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                               <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                             </svg>
+                             <span class="text-xs text-gray-400">Klik untuk detail</span>
+                           </div>
+                         </div>
+                       </div>
+                     </a>
+                   @endforeach
                 @endif
 
                 <!-- View All Button -->
@@ -232,9 +300,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Prevent dropdown from closing when clicking inside
+    // Prevent dropdown from closing when clicking inside (except on notification links)
     dropdown.addEventListener('click', function(e) {
-        e.stopPropagation();
+        // If clicked on a notification link, close the dropdown
+        if (e.target.closest('a[href="/obat"]') || e.target.closest('a[href="/expired"]')) {
+            dropdown.classList.add('hidden');
+        } else {
+            e.stopPropagation();
+        }
     });
 });
 </script>

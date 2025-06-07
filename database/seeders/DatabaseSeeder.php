@@ -22,10 +22,5 @@ class DatabaseSeeder extends Seeder
             'username' => 'yuri',
             'password' => Hash::make('yuri123'),
         ]);
-        
-        // Seed data obat untuk testing
-        $this->call([
-            ObatSeeder::class,
-        ]);
     }
 }
