@@ -18,6 +18,12 @@
                 <span class="font-medium">{{ session('success') }}</span>
             </div>
         @endif
+
+        @if(session('error'))
+            <div class="mb-4 mt-14 p-4 text-red-800 border border-red-300 rounded-lg bg-red-50" role="alert">
+                <span class="font-medium">{{ session('error') }}</span>
+            </div>
+        @endif
         
         <div class="mt-14">
             <!-- Welcome Header -->
@@ -149,36 +155,7 @@
 
             <!-- Bottom Content Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-                <!-- Obat Perlu Perhatian -->
-                <div class="bg-white rounded-lg shadow-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">⚠️ Perlu Perhatian</h3>
-                    @if($obatPerluPerhatian->count() > 0)
-                        <div class="space-y-3 max-h-64 overflow-y-auto">
-                            @foreach($obatPerluPerhatian as $obat)
-                            <div class="flex items-center justify-between p-3 {{ $obat->stok <= 5 ? 'bg-red-50 border border-red-200' : 'bg-yellow-50 border border-yellow-200' }} rounded-lg">
-                                <div class="flex-1">
-                                    <p class="font-medium text-gray-900 text-sm truncate">{{ $obat->nama_obat }}</p>
-                                    <p class="text-xs text-gray-600">{{ $obat->kategori->nama_kategori }}</p>
-                                    @if($obat->stok <= 5)
-                                        <span class="inline-block px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full mt-1">Stok: {{ $obat->stok }}</span>
-                                    @else
-                                        <span class="inline-block px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full mt-1">
-                                            Expired: {{ \Carbon\Carbon::parse($obat->tanggal_expired)->format('d/m/Y') }}
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            @endforeach
-                        </div>
-                    @else
-                        <div class="text-center py-8">
-                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <p class="mt-2 text-sm text-gray-500">Semua obat dalam kondisi baik!</p>
-                        </div>
-                    @endif
-                </div>
+                
 
                 <!-- Top Kategori -->
                 <div class="bg-white rounded-lg shadow-lg p-6">

@@ -45,6 +45,7 @@
                         <h2 class="text-xl font-bold text-gray-900">📇 Daftar Supplier</h2>
                         <p class="text-gray-600 text-sm">Kelola informasi supplier dan kontak mereka</p>
                     </div>
+                    @if(Auth::user()->isAdmin())
                     <button data-modal-target="add-supplier-modal" data-modal-toggle="add-supplier-modal" 
                             class="text-white bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 focus:ring-4 focus:outline-none focus:ring-cyan-300 font-medium rounded-lg text-sm px-6 py-3 text-center shadow-lg transition-all duration-300 transform hover:scale-105">
                         <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -52,6 +53,12 @@
                         </svg>
                         Tambah Supplier
                     </button>
+                    @else
+                    <div class="text-sm text-gray-500 bg-gray-100 px-4 py-2 rounded-lg">
+                        <span class="font-medium">Mode Lihat Saja</span>
+                        <p class="text-xs">Anda dapat melihat dan mencari data</p>
+                    </div>
+                    @endif
                 </div>
 
                 <!-- Table -->
@@ -115,6 +122,7 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4">
+                                        @if(Auth::user()->isAdmin())
                                         <div class="flex space-x-2">
                                             <button data-modal-target="edit-supplier-modal-{{ $supplier->id }}" data-modal-toggle="edit-supplier-modal-{{ $supplier->id }}"
                                                     class="bg-blue-100 hover:bg-blue-200 text-blue-700 p-2 rounded-lg transition-all duration-200 transform hover:scale-110">
@@ -129,6 +137,13 @@
                                                 </svg>
                                             </button>
                                         </div>
+                                        @else
+                                        <div class="text-center">
+                                            <span class="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
+                                                👁️ Mode Lihat
+                                            </span>
+                                        </div>
+                                        @endif
                                     </td>
                                 </tr>
                                 @empty
@@ -161,6 +176,7 @@
         </div>
     </div>
 
+    @if(Auth::user()->isAdmin())
     <!-- Add Modal -->
     <div id="add-supplier-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
         <div class="relative p-4 w-full max-w-4xl max-h-full">
@@ -284,6 +300,7 @@
         </div>
     </div>
     @endforeach
+    @endif
 
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
 </body>

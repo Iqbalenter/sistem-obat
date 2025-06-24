@@ -14,8 +14,74 @@
         </a>
       </div>
       
-      <!-- Notification Bell -->
-      <div class="flex items-center">
+      <!-- User Profile & Notification -->
+      <div class="flex items-center space-x-3">
+        <!-- User Profile Dropdown -->
+        <div class="relative">
+          <button id="user-profile-button" class="flex items-center text-sm rounded-full focus:ring-4 focus:ring-gray-300 hover:bg-gray-100 transition-all duration-200 p-2" type="button">
+            <div class="bg-blue-600 rounded-full p-2 mr-2">
+              <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div class="text-left">
+              <div class="text-sm font-medium text-gray-900">{{ Auth::user()->name }}</div>
+              <div class="text-xs text-gray-500">{{ ucfirst(Auth::user()->role) }}</div>
+            </div>
+            <svg class="w-4 h-4 ml-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+
+          <!-- User Profile Dropdown -->
+          <div id="user-profile-dropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+            <!-- User Info Header -->
+            <div class="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
+              <div class="flex items-center">
+                <div class="bg-blue-600 rounded-full p-2 mr-3">
+                  <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                  </svg>
+                </div>
+                <div>
+                  <p class="text-sm font-medium text-gray-900">{{ Auth::user()->name }}</p>
+                  <p class="text-xs text-gray-500">@{{ Auth::user()->username }}</p>
+                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mt-1">
+                    {{ ucfirst(Auth::user()->role) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Menu Items -->
+            <div class="py-1">
+              <a href="/profile" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150">
+                <svg class="w-4 h-4 mr-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                </svg>
+                Lihat Profile
+              </a>
+              <a href="/profile" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150">
+                <svg class="w-4 h-4 mr-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                </svg>
+                Edit Profile
+              </a>
+              <div class="border-t border-gray-100"></div>
+              <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="flex items-center w-full px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors duration-150">
+                  <svg class="w-4 h-4 mr-3 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/>
+                  </svg>
+                  Logout
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notification Bell -->
         <div class="relative">
           <button id="notification-bell" class="relative p-2 mr-3 text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-300 rounded-lg transition-all duration-200 hover:bg-gray-100">
             <!-- Bell Icon -->
@@ -257,18 +323,30 @@
                <span class="flex-1 ms-3 whitespace-nowrap">Notifikasi Expired</span>
             </a>
          </li>
+         @if(Auth::user()->isAdmin())
          <li>
             <a href="/laporan" class="flex items-center p-2 rounded-lg nav-link">
                <span class="flex-1 ms-3 whitespace-nowrap">Laporan</span>
             </a>
          </li>
+         @endif
          <li>
             <a href="/persediaan" class="flex items-center p-2 rounded-lg nav-link">
                <span class="flex-1 ms-3 whitespace-nowrap">Persediaan</span>
             </a>
          </li>
          <li>
-            <span class="flex ms-3 items-center p-2 rounded-lg font-bold underline nav-link">Halo, {{ Auth::user()->name ?? 'Nama User' }}</span>
+            <a href="/profile" class="flex items-center p-2 rounded-lg nav-link">
+               <span class="flex-1 ms-3 whitespace-nowrap">Profile</span>
+            </a>
+         </li>
+         <li>
+            <span class="flex ms-3 items-center p-2 rounded-lg font-bold underline nav-link">
+               Halo, {{ Auth::user()->name ?? 'Nama User' }}
+               <span class="text-xs ml-2 px-2 py-1 rounded-full bg-white text-gray-800">
+                  {{ ucfirst(Auth::user()->role ?? 'admin') }}
+               </span>
+            </span>
          </li>
          <li>
             <form action="{{ route('logout') }}" method="POST">
@@ -282,32 +360,67 @@
    </div>
 </aside>
 
-<!-- JavaScript for Notification Bell -->
+<!-- JavaScript for Dropdowns -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const bellButton = document.getElementById('notification-bell');
-    const dropdown = document.getElementById('notification-dropdown');
+    // User Profile Dropdown
+    const profileButton = document.getElementById('user-profile-button');
+    const profileDropdown = document.getElementById('user-profile-dropdown');
     
+    // Notification Bell Dropdown
+    const bellButton = document.getElementById('notification-bell');
+    const notificationDropdown = document.getElementById('notification-dropdown');
+    
+    // Toggle Profile Dropdown
+    profileButton.addEventListener('click', function(e) {
+        e.stopPropagation();
+        profileDropdown.classList.toggle('hidden');
+        // Close notification dropdown when opening profile
+        if (notificationDropdown) notificationDropdown.classList.add('hidden');
+    });
+    
+    // Toggle Notification Dropdown
     bellButton.addEventListener('click', function(e) {
         e.stopPropagation();
-        dropdown.classList.toggle('hidden');
+        notificationDropdown.classList.toggle('hidden');
+        // Close profile dropdown when opening notification
+        if (profileDropdown) profileDropdown.classList.add('hidden');
     });
     
-    // Close dropdown when clicking outside
+    // Close dropdowns when clicking outside
     document.addEventListener('click', function(e) {
-        if (!bellButton.contains(e.target) && !dropdown.contains(e.target)) {
-            dropdown.classList.add('hidden');
+        // Close profile dropdown
+        if (profileButton && profileDropdown && 
+            !profileButton.contains(e.target) && !profileDropdown.contains(e.target)) {
+            profileDropdown.classList.add('hidden');
+        }
+        
+        // Close notification dropdown
+        if (bellButton && notificationDropdown && 
+            !bellButton.contains(e.target) && !notificationDropdown.contains(e.target)) {
+            notificationDropdown.classList.add('hidden');
         }
     });
     
-    // Prevent dropdown from closing when clicking inside (except on notification links)
-    dropdown.addEventListener('click', function(e) {
-        // If clicked on a notification link, close the dropdown
-        if (e.target.closest('a[href="/obat"]') || e.target.closest('a[href="/expired"]')) {
-            dropdown.classList.add('hidden');
-        } else {
-            e.stopPropagation();
-        }
-    });
+    // Prevent dropdown from closing when clicking inside (except on specific links)
+    if (notificationDropdown) {
+        notificationDropdown.addEventListener('click', function(e) {
+            // If clicked on a notification link, close the dropdown
+            if (e.target.closest('a[href="/obat"]') || e.target.closest('a[href="/expired"]')) {
+                notificationDropdown.classList.add('hidden');
+            } else {
+                e.stopPropagation();
+            }
+        });
+    }
+    
+    if (profileDropdown) {
+        profileDropdown.addEventListener('click', function(e) {
+            // Close dropdown when clicking on profile links
+            if (e.target.closest('a[href="/profile"]')) {
+                profileDropdown.classList.add('hidden');
+            }
+        });
+    }
 });
 </script>

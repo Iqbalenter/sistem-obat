@@ -1,12 +1,12 @@
 /* Custom CSS for Navbar and Sidebar */
 .nav-custom {
-    background-color: #9a9a69;
-    border-bottom: 1px solid #9a9a69;
+    background-color: #5fb0a5;
+    border-bottom: 1px solid #5fb0a5;
 }
 
 .sidebar-custom {
-    background-color: #9a9a69;
-    border-right: 1px solid #9a9a69;
+    background-color: #5fb0a5;
+    border-right: 1px solid #5fb0a5;
 }
 
 .sidebar-custom .nav-link {
@@ -15,7 +15,7 @@
 }
 
 .sidebar-custom .nav-link:hover {
-    background-color: #9a9a69;
+    background-color: #4a9690;
 }
 
 .sidebar-custom .nav-icon {
@@ -35,5 +35,5 @@
 }
 
 .toggle-button:hover {
-    background-color: #84cc16;
+    background-color: #4a9690;
 } 
