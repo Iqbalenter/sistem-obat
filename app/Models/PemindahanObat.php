@@ -10,6 +10,8 @@ class PemindahanObat extends Model
 
     protected $fillable = [
         'obat_id',
+    'obat_nama',
+    'kategori_nama',
         'jenis', // pemusnahan / pengembalian
         'jumlah',
         'alasan',

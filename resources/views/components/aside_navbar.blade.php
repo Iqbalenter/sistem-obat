@@ -296,22 +296,22 @@
       <ul class="space-y-2 font-medium">
          <li>
             <a href="/" class="flex items-center p-2 rounded-lg nav-link">
-               <span class="ms-3">Dashboard</span>
+               <span class="ms-3">Beranda Utama</span>
             </a>
          </li>
          <li>
             <button type="button" class="flex items-center w-full p-2 nav-link" aria-controls="dropdown-example" data-collapse-toggle="dropdown-example">
-                  <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">Master Obat</span>
+                  <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">Obat</span>
                   <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
                   </svg>
             </button>
             <ul id="dropdown-example" class="hidden py-2 space-y-2">
                   <li>
-                     <a href="/kategori" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group nav-link">Kategori</a>
+                     <a href="/kategori" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group nav-link">Jenis Obat</a>
                   </li>
                   <li>
-                     <a href="/obat" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group nav-link">Obat</a>
+                     <a href="/obat" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group nav-link">Daftar Obat</a>
                   </li>
                   <li>
                      <a href="/supplier" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group nav-link">Supplier</a>
@@ -320,18 +320,18 @@
          </li>
          <li>
             <a href="/expired" class="flex items-center p-2 rounded-lg nav-link">
-               <span class="flex-1 ms-3 whitespace-nowrap">Notifikasi Expired</span>
+               <span class="flex-1 ms-3 whitespace-nowrap">Peringatan Kadaluwarsa</span>
             </a>
          </li>
          <li>
             <a href="/pemindahan" class="flex items-center p-2 rounded-lg nav-link">
-               <span class="flex-1 ms-3 whitespace-nowrap">Pemusnahan/Pengembalian</span>
+               <span class="flex-1 ms-3 whitespace-nowrap">Return/Pengelolaan Limbah</span>
             </a>
          </li>
          @if(Auth::user()->isAdmin() || Auth::user()->isPegawai())
          <li>
             <a href="/laporan" class="flex items-center p-2 rounded-lg nav-link">
-               <span class="flex-1 ms-3 whitespace-nowrap">Laporan</span>
+               <span class="flex-1 ms-3 whitespace-nowrap">Dashboard Laporan</span>
             </a>
          </li>
          @endif
@@ -342,7 +342,7 @@
          </li>
          <li>
             <a href="/profile" class="flex items-center p-2 rounded-lg nav-link">
-               <span class="flex-1 ms-3 whitespace-nowrap">Profile</span>
+               <span class="flex-1 ms-3 whitespace-nowrap">Info Pengguna</span>
             </a>
          </li>
          <li>

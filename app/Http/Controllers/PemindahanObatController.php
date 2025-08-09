@@ -15,11 +15,18 @@ class PemindahanObatController extends Controller
     {
         $pemusnahan = PemindahanObat::with(['obat.kategori','supplier'])
             ->where('jenis', 'pemusnahan')
-            ->latest()->paginate(10);
+            ->latest()->paginate(10, ['*'], 'pemusnahan_page');
         $pengembalian = PemindahanObat::with(['obat.kategori','supplier'])
             ->where('jenis', 'pengembalian')
-            ->latest()->paginate(10);
-        return view('pemindahan.index', compact('pemusnahan', 'pengembalian'));
+            ->latest()->paginate(10, ['*'], 'pengembalian_page');
+        // Daftar obat yang sudah kadaluarsa (expired)
+        $expiredObats = Obat::with(['kategori','supplier'])
+            ->whereDate('tanggal_expired', '<', now()->toDateString())
+            ->whereNotIn('status', ['dimusnahkan','dikembalikan'])
+            ->orderBy('tanggal_expired', 'asc')
+            ->paginate(10, ['*'], 'expired_page');
+
+        return view('pemindahan.index', compact('pemusnahan', 'pengembalian', 'expiredObats'));
     }
 
     public function store(Request $request)
@@ -45,6 +52,8 @@ class PemindahanObatController extends Controller
 
             PemindahanObat::create([
                 'obat_id' => $obat->id,
+                'obat_nama' => $obat->nama_obat,
+                'kategori_nama' => optional($obat->kategori)->nama_kategori,
                 'jenis' => $request->jenis,
                 'jumlah' => $request->jumlah,
                 'alasan' => $request->alasan,
@@ -53,25 +62,21 @@ class PemindahanObatController extends Controller
                 'diproses_oleh' => Auth::id(),
             ]);
 
-            // Update stok
-            $obat->stok = $sisa;
-
-            // Jika semua stok dipindahkan, update status
+            // Jika semua stok dipindahkan, hapus obat dari daftar
             if ($sisa <= 0) {
-                $obat->status = $request->jenis === 'pemusnahan' ? 'dimusnahkan' : 'dikembalikan';
+                $obat->delete();
             } else {
-                // Jika masih ada sisa stok, status tetap dipertahankan (aktif)
+                // Update stok dan pertahankan status
+                $obat->stok = $sisa;
                 if (!in_array($obat->status, ['dimusnahkan','dikembalikan'])) {
                     $obat->status = 'dipertahankan';
                 }
+                // Simpan supplier asal jika pengembalian dan belum ada
+                if ($request->jenis === 'pengembalian' && !$obat->supplier_id && $request->supplier_id) {
+                    $obat->supplier_id = $request->supplier_id;
+                }
+                $obat->save();
             }
-
-            // Simpan supplier asal jika pengembalian dan belum ada
-            if ($request->jenis === 'pengembalian' && !$obat->supplier_id && $request->supplier_id) {
-                $obat->supplier_id = $request->supplier_id;
-            }
-
-            $obat->save();
         });
 
         return back()->with('success', 'Data pemindahan berhasil disimpan.');
