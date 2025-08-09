@@ -46,7 +46,7 @@
                     </div>
                     <div class="bg-white bg-opacity-20 rounded-full p-3">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
                         </svg>
                     </div>
                 </div>
@@ -119,6 +119,44 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path>
                         </svg>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ringkasan Status Baru -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+                <p class="text-sm text-gray-500">Dipertahankan</p>
+                <p class="text-3xl font-bold text-gray-900">{{ number_format($statusDipertahankan) }}</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+                <p class="text-sm text-gray-500">Dimusnahkan</p>
+                <p class="text-3xl font-bold text-gray-900">{{ number_format($statusDimusnahkan) }}</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+                <p class="text-sm text-gray-500">Dikembalikan</p>
+                <p class="text-3xl font-bold text-gray-900">{{ number_format($statusDikembalikan) }}</p>
+            </div>
+        </div>
+
+        <!-- Ringkasan Pemindahan Periode -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500">Total Dimusnahkan (Periode)</p>
+                        <p class="text-3xl font-bold text-red-600">{{ number_format($pemusnahanPeriode) }}</p>
+                    </div>
+                    <div class="bg-red-100 text-red-700 px-3 py-2 rounded-full text-xs font-semibold">Pemusnahan</div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500">Total Dikembalikan (Periode)</p>
+                        <p class="text-3xl font-bold text-blue-600">{{ number_format($pengembalianPeriode) }}</p>
+                    </div>
+                    <div class="bg-blue-100 text-blue-700 px-3 py-2 rounded-full text-xs font-semibold">Pengembalian</div>
                 </div>
             </div>
         </div>
@@ -304,6 +342,46 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+
+        <!-- Tabel Pemindahan (Periode) -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden h-fit mb-8">
+            <div class="px-6 py-4 bg-gradient-to-r from-slate-50 to-slate-100 border-b flex items-center justify-between">
+                <h3 class="text-lg font-semibold text-gray-900">🧾 Pemindahan Obat pada Periode</h3>
+                <span class="text-sm text-gray-500">Periode: {{ \Carbon\Carbon::parse($startDate)->format('d M Y') }} - {{ \Carbon\Carbon::parse($endDate)->format('d M Y') }}</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Obat</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Supplier</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Diproses Oleh</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 bg-white">
+                        @forelse($pemindahanRows as $row)
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-3 text-sm text-gray-600">{{ \Carbon\Carbon::parse($row->tanggal)->format('d/m/Y') }}</td>
+                            <td class="px-6 py-3">
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {{ $row->jenis === 'pemusnahan' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800' }}">{{ ucfirst($row->jenis) }}</span>
+                            </td>
+                            <td class="px-6 py-3 text-sm text-gray-800">{{ $row->obat->nama_obat ?? '-' }}</td>
+                            <td class="px-6 py-3 text-sm font-semibold text-gray-900">{{ number_format($row->jumlah) }}</td>
+                            <td class="px-6 py-3 text-sm text-gray-700">{{ $row->supplier->nama_supplier ?? '-' }}</td>
+                            <td class="px-6 py-3 text-sm text-gray-500">{{ $row->diproses_oleh ?? '-' }}</td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="6" class="px-6 py-6 text-center text-gray-500">Tidak ada data pemindahan pada periode ini</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
 

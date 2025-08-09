@@ -34,7 +34,7 @@
 
             <!-- Statistics Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <!-- Total Obat -->
+                <!-- Total Obat (kembali seperti semula) -->
                 <div class="bg-blue-600 rounded-lg shadow-lg p-6 text-white">
                     <div class="flex items-center justify-between">
                         <div>
@@ -90,6 +90,43 @@
                             <svg class="w-8 h-8 text-red-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.664-.833-2.464 0L4.34 16.5c-.77.833.192 2.5 1.732 2.5z"/>
                             </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Obat (ditampilkan terpisah, bukan digabung) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm font-medium">Dipertahankan</p>
+                            <p class="text-3xl font-bold text-gray-900">{{ number_format($statusDipertahankan ?? 0) }}</p>
+                        </div>
+                        <div class="bg-blue-100 rounded-full p-3">
+                            <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow p-6 border-l-4 border-red-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm font-medium">Dimusnahkan</p>
+                            <p class="text-3xl font-bold text-gray-900">{{ number_format($statusDimusnahkan ?? 0) }}</p>
+                        </div>
+                        <div class="bg-red-100 rounded-full p-3">
+                            <svg class="w-7 h-7 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow p-6 border-l-4 border-purple-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm font-medium">Dikembalikan</p>
+                            <p class="text-3xl font-bold text-gray-900">{{ number_format($statusDikembalikan ?? 0) }}</p>
+                        </div>
+                        <div class="bg-purple-100 rounded-full p-3">
+                            <svg class="w-7 h-7 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h11M9 21V3m7 7l5-5m0 0l-5-5m5 5H13"/></svg>
                         </div>
                     </div>
                 </div>

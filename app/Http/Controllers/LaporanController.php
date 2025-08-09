@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Obat;
 use App\Models\Kategori;
+use App\Models\PemindahanObat;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -43,29 +44,39 @@ class LaporanController extends Controller
                 $start = Carbon::now()->startOfMonth();
                 $end = Carbon::now()->endOfMonth();
         }
+        $startDate = $start->toDateString();
+        $endDate = $end->toDateString();
         
         // Statistik Umum
         $totalObat = Obat::count();
         $totalKategori = Kategori::count();
         $totalStok = Obat::sum('stok');
-        $obatExpired = Obat::where('tanggal_expired', '<', Carbon::today())->count();
-        $obatAkanExpired = Obat::where('tanggal_expired', '>=', Carbon::today())
-                              ->where('tanggal_expired', '<=', Carbon::today()->addMonths(3))
-                              ->count();
+        $obatExpired = Obat::where('status','dipertahankan')->where('tanggal_expired', '<', Carbon::today())->count();
+        $obatAkanExpired = Obat::where('status','dipertahankan')->whereBetween('tanggal_expired', [Carbon::today(), Carbon::today()->addMonths(3)])->count();
         $stokRendah = Obat::where('stok', '<=', 10)->count();
+
+        // Status breakdown sebagai total unit
+        $statusDipertahankan = Obat::where('status', 'dipertahankan')->sum('stok');
+        $statusDimusnahkan = PemindahanObat::where('jenis', 'pemusnahan')->sum('jumlah');
+        $statusDikembalikan = PemindahanObat::where('jenis', 'pengembalian')->sum('jumlah');
+
+        // Ringkasan pemindahan pada periode
+        $pemusnahanPeriode = PemindahanObat::where('jenis','pemusnahan')
+                                ->whereBetween('tanggal', [$startDate, $endDate])
+                                ->sum('jumlah');
+        $pengembalianPeriode = PemindahanObat::where('jenis','pengembalian')
+                                ->whereBetween('tanggal', [$startDate, $endDate])
+                                ->sum('jumlah');
         
-        // Laporan berdasarkan Kategori
+        // Laporan berdasarkan Kategori (gunakan withSum untuk total stok)
         $laporanKategori = Kategori::withCount('obats')
-                                  ->with(['obats' => function($query) {
-                                      $query->select('kategori_id', DB::raw('SUM(stok) as total_stok'));
-                                      $query->groupBy('kategori_id');
-                                  }])
+                                  ->withSum('obats', 'stok')
                                   ->get()
                                   ->map(function($kategori) {
                                       return [
                                           'nama_kategori' => $kategori->nama_kategori,
                                           'jumlah_obat' => $kategori->obats_count,
-                                          'total_stok' => $kategori->obats->sum('stok') ?? 0
+                                          'total_stok' => (int) ($kategori->obats_sum_stok ?? 0)
                                       ];
                                   });
         
@@ -82,15 +93,16 @@ class LaporanController extends Controller
                             ->limit(10)
                             ->get();
         
-        // Obat yang akan expired dalam 90 hari
+        // Obat yang akan expired dalam 90 hari (hanya dipertahankan)
         $obatAkanExpiredSoon = Obat::with('kategori')
-                                  ->where('tanggal_expired', '>=', Carbon::today())
-                                  ->where('tanggal_expired', '<=', Carbon::today()->addDays(90))
+                                  ->where('status','dipertahankan')
+                                  ->whereBetween('tanggal_expired', [Carbon::today(), Carbon::today()->addDays(90)])
                                   ->orderBy('tanggal_expired', 'asc')
                                   ->get();
         
-        // Obat yang sudah expired
+        // Obat yang sudah expired (hanya dipertahankan)
         $obatSudahExpired = Obat::with('kategori')
+                               ->where('status','dipertahankan')
                                ->where('tanggal_expired', '<', Carbon::today())
                                ->orderBy('tanggal_expired', 'desc')
                                ->limit(10)
@@ -113,6 +125,12 @@ class LaporanController extends Controller
             $chartBulanan['labels'][] = $month->format('M Y');
             $chartBulanan['data'][] = $count;
         }
+
+        // Data pemindahan per periode (untuk tabel)
+        $pemindahanRows = PemindahanObat::with(['obat','supplier'])
+                            ->whereBetween('tanggal', [$startDate, $endDate])
+                            ->latest()
+                            ->get();
         
         return view('laporan', compact(
             'totalObat',
@@ -130,7 +148,16 @@ class LaporanController extends Controller
             'chartBulanan',
             'periode',
             'tanggal_mulai',
-            'tanggal_selesai'
+            'tanggal_selesai',
+            'startDate',
+            'endDate',
+            // baru
+            'statusDipertahankan',
+            'statusDimusnahkan',
+            'statusDikembalikan',
+            'pemusnahanPeriode',
+            'pengembalianPeriode',
+            'pemindahanRows'
         ));
     }
-} 
+}

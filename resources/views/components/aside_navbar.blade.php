@@ -45,7 +45,7 @@
                 </div>
                 <div>
                   <p class="text-sm font-medium text-gray-900">{{ Auth::user()->name }}</p>
-                  <p class="text-xs text-gray-500">@{{ Auth::user()->username }}</p>
+                  <p class="text-xs text-gray-500">{{ Auth::user()->username }}</p>
                   <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mt-1">
                     {{ ucfirst(Auth::user()->role) }}
                   </span>
@@ -323,7 +323,12 @@
                <span class="flex-1 ms-3 whitespace-nowrap">Notifikasi Expired</span>
             </a>
          </li>
-         @if(Auth::user()->isAdmin())
+         <li>
+            <a href="/pemindahan" class="flex items-center p-2 rounded-lg nav-link">
+               <span class="flex-1 ms-3 whitespace-nowrap">Pemusnahan/Pengembalian</span>
+            </a>
+         </li>
+         @if(Auth::user()->isAdmin() || Auth::user()->isPegawai())
          <li>
             <a href="/laporan" class="flex items-center p-2 rounded-lg nav-link">
                <span class="flex-1 ms-3 whitespace-nowrap">Laporan</span>

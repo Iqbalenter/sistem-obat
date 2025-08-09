@@ -102,7 +102,7 @@
                         <h2 class="text-xl font-bold text-gray-900">📋 Daftar Obat</h2>
                         <p class="text-gray-600 text-sm">Kelola data obat Anda dengan mudah</p>
                     </div>
-                    @if(Auth::user()->isAdmin())
+                    @if(Auth::user()->isAdmin() || Auth::user()->isPegawai())
                     <button data-modal-target="add-obat-modal" data-modal-toggle="add-obat-modal" 
                             class="text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-6 py-3 text-center shadow-lg transition-all duration-300 transform hover:scale-105">
                         <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -127,6 +127,7 @@
                                     <th scope="col" class="px-6 py-4 font-bold">No</th>
                                     <th scope="col" class="px-6 py-4 font-bold">Nama Obat</th>
                                     <th scope="col" class="px-6 py-4 font-bold">Kategori</th>
+                                    <th scope="col" class="px-6 py-4 font-bold">Supplier</th>
                                     <th scope="col" class="px-6 py-4 font-bold">Tanggal Masuk</th>
                                     <th scope="col" class="px-6 py-4 font-bold">Tanggal Expired</th>
                                     <th scope="col" class="px-6 py-4 font-bold">Stok</th>
@@ -148,6 +149,11 @@
                                             {{ $obat->kategori->nama_kategori ?? 'Kategori Tidak Ditemukan' }}
                                         </span>
                                     </td>
+                                    <td class="px-6 py-4">
+                                        <span class="bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 text-xs font-medium px-3 py-1 rounded-full">
+                                            {{ $obat->supplier->nama_supplier ?? '-' }}
+                                        </span>
+                                    </td>
                                     <td class="px-6 py-4 text-gray-600">{{ $obat->tanggal_masuk->format('d/m/Y') }}</td>
                                     <td class="px-6 py-4 text-gray-600">{{ $obat->tanggal_expired->format('d/m/Y') }}</td>
                                     <td class="px-6 py-4">
@@ -162,22 +168,28 @@
                                             $diffInDays = $today->diffInDays($expired, false);
                                         @endphp
                                         
-                                        @if($diffInDays < 0)
-                                            <span class="bg-gradient-to-r from-red-100 to-red-200 text-red-800 text-xs font-bold px-3 py-1 rounded-full">
-                                                💀 Expired
-                                            </span>
-                                        @elseif($diffInDays <= 30)
-                                            <span class="bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full">
-                                                ⚠️ Akan Expired
-                                            </span>
+                                        @if($obat->status === 'dimusnahkan')
+                                            <span class="bg-red-100 text-red-800 text-xs font-bold px-3 py-1 rounded-full">Dimusnahkan</span>
+                                        @elseif($obat->status === 'dikembalikan')
+                                            <span class="bg-purple-100 text-purple-800 text-xs font-bold px-3 py-1 rounded-full">Dikembalikan</span>
                                         @else
-                                            <span class="bg-gradient-to-r from-green-100 to-green-200 text-green-800 text-xs font-bold px-3 py-1 rounded-full">
-                                                ✅ Normal
-                                            </span>
+                                            @if($diffInDays < 0)
+                                                <span class="bg-gradient-to-r from-red-100 to-red-200 text-red-800 text-xs font-bold px-3 py-1 rounded-full">
+                                                    💀 Expired (Dipertahankan)
+                                                </span>
+                                            @elseif($diffInDays <= 30)
+                                                <span class="bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full">
+                                                    ⚠️ Akan Expired (Dipertahankan)
+                                                </span>
+                                            @else
+                                                <span class="bg-gradient-to-r from-green-100 to-green-200 text-green-800 text-xs font-bold px-3 py-1 rounded-full">
+                                                    ✅ Normal (Dipertahankan)
+                                                </span>
+                                            @endif
                                         @endif
                                     </td>
                                     <td class="px-6 py-4">
-                                        @if(Auth::user()->isAdmin())
+                                        @if(Auth::user()->isAdmin() || Auth::user()->isPegawai())
                                         <div class="flex space-x-2">
                                             <button data-modal-target="edit-obat-modal-{{ $obat->id }}" data-modal-toggle="edit-obat-modal-{{ $obat->id }}"
                                                     class="bg-blue-100 hover:bg-blue-200 text-blue-700 p-2 rounded-lg transition-all duration-200 transform hover:scale-110">
@@ -203,7 +215,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="8" class="px-6 py-12 text-center">
+                                    <td colspan="9" class="px-6 py-12 text-center">
                                         <div class="flex flex-col items-center">
                                             <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -231,7 +243,7 @@
         </div>
     </div>
 
-    @if(Auth::user()->isAdmin())
+    @if(Auth::user()->isAdmin() || Auth::user()->isPegawai())
     <!-- Add Modal -->
     <div id="add-obat-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
         <div class="relative p-4 w-full max-w-4xl max-h-full">
@@ -262,6 +274,16 @@
                                 <option value="">Pilih Kategori</option>
                                 @foreach($kategoris as $kategori)
                                     <option value="{{ $kategori->id }}">{{ $kategori->nama_kategori }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label for="supplier_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Supplier</label>
+                            <select name="supplier_id" id="supplier_id" 
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                                <option value="">Pilih Supplier (opsional)</option>
+                                @foreach($suppliers as $supplier)
+                                    <option value="{{ $supplier->id }}">{{ $supplier->nama_supplier }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -327,6 +349,18 @@
                                 @foreach($kategoris as $kategori)
                                     <option value="{{ $kategori->id }}" {{ $obat->kategori_id == $kategori->id ? 'selected' : '' }}>
                                         {{ $kategori->nama_kategori }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label for="supplier_id_edit_{{ $obat->id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Supplier</label>
+                            <select name="supplier_id" id="supplier_id_edit_{{ $obat->id }}" 
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                                <option value="">Pilih Supplier (opsional)</option>
+                                @foreach($suppliers as $supplier)
+                                    <option value="{{ $supplier->id }}" {{ $obat->supplier_id == $supplier->id ? 'selected' : '' }}>
+                                        {{ $supplier->nama_supplier }}
                                     </option>
                                 @endforeach
                             </select>

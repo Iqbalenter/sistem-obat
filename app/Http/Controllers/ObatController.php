@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Obat;
 use App\Models\Kategori;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 
 class ObatController extends Controller
@@ -13,9 +14,10 @@ class ObatController extends Controller
      */
     public function index()
     {
-        $obats = Obat::with('kategori')->latest()->paginate(10);
+        $obats = Obat::with(['kategori','supplier'])->latest()->paginate(10);
         $kategoris = Kategori::all();
-        return view('obat', compact('obats', 'kategoris'));
+        $suppliers = Supplier::all();
+        return view('obat', compact('obats', 'kategoris', 'suppliers'));
     }
 
     /**
@@ -24,7 +26,8 @@ class ObatController extends Controller
     public function create()
     {
         $kategoris = Kategori::all();
-        return view('obat.create', compact('kategoris'));
+        $suppliers = Supplier::all();
+        return view('obat.create', compact('kategoris','suppliers'));
     }
 
     /**
@@ -36,6 +39,7 @@ class ObatController extends Controller
             'nama_obat' => 'required|string|max:255',
             'tanggal_masuk' => 'required|date',
             'kategori_id' => 'required|exists:kategoris,id',
+            'supplier_id' => 'nullable|exists:suppliers,id',
             'tanggal_expired' => 'required|date|after:tanggal_masuk',
             'stok' => 'required|integer|min:0'
         ], [
@@ -45,6 +49,7 @@ class ObatController extends Controller
             'tanggal_masuk.date' => 'Format tanggal masuk tidak valid',
             'kategori_id.required' => 'Kategori wajib dipilih',
             'kategori_id.exists' => 'Kategori yang dipilih tidak valid',
+            'supplier_id.exists' => 'Supplier yang dipilih tidak valid',
             'tanggal_expired.required' => 'Tanggal expired wajib diisi',
             'tanggal_expired.date' => 'Format tanggal expired tidak valid',
             'tanggal_expired.after' => 'Tanggal expired harus setelah tanggal masuk',
@@ -57,8 +62,10 @@ class ObatController extends Controller
             'nama_obat' => $request->nama_obat,
             'tanggal_masuk' => $request->tanggal_masuk,
             'kategori_id' => $request->kategori_id,
+            'supplier_id' => $request->supplier_id,
             'tanggal_expired' => $request->tanggal_expired,
-            'stok' => $request->stok
+            'stok' => $request->stok,
+            'status' => 'dipertahankan',
         ]);
 
         return redirect()->route('obat.index')->with('success', 'Obat berhasil ditambahkan!');
@@ -69,7 +76,7 @@ class ObatController extends Controller
      */
     public function show(string $id)
     {
-        $obat = Obat::with('kategori')->findOrFail($id);
+        $obat = Obat::with(['kategori','supplier'])->findOrFail($id);
         return view('obat.show', compact('obat'));
     }
 
@@ -80,7 +87,8 @@ class ObatController extends Controller
     {
         $obat = Obat::findOrFail($id);
         $kategoris = Kategori::all();
-        return view('obat.edit', compact('obat', 'kategoris'));
+        $suppliers = Supplier::all();
+        return view('obat.edit', compact('obat', 'kategoris','suppliers'));
     }
 
     /**
@@ -94,6 +102,7 @@ class ObatController extends Controller
             'nama_obat' => 'required|string|max:255',
             'tanggal_masuk' => 'required|date',
             'kategori_id' => 'required|exists:kategoris,id',
+            'supplier_id' => 'nullable|exists:suppliers,id',
             'tanggal_expired' => 'required|date|after:tanggal_masuk',
             'stok' => 'required|integer|min:0'
         ], [
@@ -103,6 +112,7 @@ class ObatController extends Controller
             'tanggal_masuk.date' => 'Format tanggal masuk tidak valid',
             'kategori_id.required' => 'Kategori wajib dipilih',
             'kategori_id.exists' => 'Kategori yang dipilih tidak valid',
+            'supplier_id.exists' => 'Supplier yang dipilih tidak valid',
             'tanggal_expired.required' => 'Tanggal expired wajib diisi',
             'tanggal_expired.date' => 'Format tanggal expired tidak valid',
             'tanggal_expired.after' => 'Tanggal expired harus setelah tanggal masuk',
@@ -115,9 +125,16 @@ class ObatController extends Controller
             'nama_obat' => $request->nama_obat,
             'tanggal_masuk' => $request->tanggal_masuk,
             'kategori_id' => $request->kategori_id,
+            'supplier_id' => $request->supplier_id,
             'tanggal_expired' => $request->tanggal_expired,
             'stok' => $request->stok
         ]);
+
+        // Jaga status tetap valid jika belum dipindahkan semua
+        if ($obat->stok > 0 && !in_array($obat->status, ['dimusnahkan','dikembalikan'])) {
+            $obat->status = 'dipertahankan';
+            $obat->save();
+        }
 
         return redirect()->route('obat.index')->with('success', 'Obat berhasil diperbarui!');
     }

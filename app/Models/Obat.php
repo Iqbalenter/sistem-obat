@@ -13,7 +13,9 @@ class Obat extends Model
         'tanggal_masuk',
         'kategori_id',
         'tanggal_expired',
-        'stok'
+        'stok',
+        'supplier_id',
+        'status', // Tambahkan status
     ];
 
     protected $casts = [
@@ -25,5 +27,11 @@ class Obat extends Model
     public function kategori()
     {
         return $this->belongsTo(Kategori::class, 'kategori_id');
+    }
+
+    // Relasi dengan tabel supplier
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class, 'supplier_id');
     }
 }
