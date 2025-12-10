@@ -37,12 +37,31 @@
                     <p class="text-gray-600 text-sm">Daftar obat yang telah expired dan perlu tindakan</p>
                 </div>
             </div>
+            
+            <!-- Informasi Sistem Slot Container -->
+            <div class="mx-6 mb-4 p-4 bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-lg">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <svg class="w-5 h-5 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-orange-800">
+                            <span class="font-medium">Sistem Slot Container:</span> 
+                            Obat expired ditampilkan berdasarkan slot container (1-20) untuk memudahkan identifikasi lokasi dalam proses pemindahan.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
             <div class="p-6">
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm text-left text-gray-500">
                         <thead class="text-xs text-gray-700 uppercase bg-gradient-to-r from-gray-50 to-gray-100">
                             <tr>
-                                <th class="px-6 py-4 font-bold">No</th>
+                                <th class="px-6 py-4 font-bold">Slot Container</th>
+                                <th class="px-6 py-4 font-bold">Gambar</th>
                                 <th class="px-6 py-4 font-bold">Nama Obat</th>
                                 <th class="px-6 py-4 font-bold">Tanggal Masuk</th>
                                 <th class="px-6 py-4 font-bold">Tanggal Expired</th>
@@ -54,9 +73,23 @@
                             @forelse($expiredObats as $index => $o)
                             <tr class="hover:bg-gray-50 transition-colors duration-200">
                                 <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                                    <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-bold">
-                                        {{ ($expiredObats->currentPage() - 1) * $expiredObats->perPage() + $index + 1 }}
+                                    <span class="bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 px-3 py-1 rounded-full text-xs font-bold">
+                                        Slot {{ ($index % 20) + 1 }}
                                     </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    @if($o->gambar)
+                                        <img src="{{ asset('storage/' . $o->gambar) }}" 
+                                             alt="{{ $o->nama_obat }}" 
+                                             class="w-12 h-12 object-cover rounded-lg shadow-sm border border-gray-200 hover:scale-110 transition-transform duration-200 cursor-pointer"
+                                             onclick="showImageModal('{{ asset('storage/' . $o->gambar) }}', '{{ $o->nama_obat }}')">
+                                    @else
+                                        <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                            </svg>
+                                        </div>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="font-medium text-gray-900">{{ $o->nama_obat }}</div>
@@ -353,8 +386,33 @@ document.addEventListener('DOMContentLoaded', () => {
                     <input type="date" name="tanggal" class="w-full border rounded p-2" required />
                 </div>
                 <div>
-                    <label class="block mb-1 text-sm">Alasan</label>
-                    <input type="text" name="alasan" class="w-full border rounded p-2" placeholder="Contoh: Kadaluarsa" />
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Alasan Pemusnahan</label>
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            id="alasan-pemusnahan-input" 
+                            name="alasan" 
+                            list="alasan-pemusnahan-list"
+                            class="w-full border border-gray-300 rounded-lg p-2.5 pr-10 focus:ring-2 focus:ring-red-500 focus:border-red-500" 
+                            placeholder="Pilih atau ketik alasan..."
+                            autocomplete="off"
+                        />
+                        <datalist id="alasan-pemusnahan-list">
+                            <option value="Kedaluwarsa (Expired) - Obat sudah melewati tanggal batas penggunaan">
+                            <option value="Rusak Berat (Non-Recyclable) - Kerusakan fisik parah tidak layak guna">
+                            <option value="Terkontaminasi - Tercemar zat atau mikroorganisme lain">
+                            <option value="Mutu Tidak Memenuhi Syarat - Hasil uji lab tidak sesuai standar">
+                            <option value="Sisa Pelayanan Pasien - Obat dibuka dan tidak bisa disimpan lagi">
+                            <option value="Hasil Penarikan (Recall) - Ditarik dari peredaran dan dimusnahkan">
+                            <option value="Tidak Memiliki Izin Edar - Obat ilegal atau tidak terdaftar BPOM">
+                            <option value="Kemasan/Label Rusak Total - Label tidak bisa dibaca sama sekali">
+                            <option value="Kesalahan Resep/Pemberian - Diracik keliru dan tidak bisa diperbaiki">
+                            <option value="Perubahan Kondisi Fisik - Perubahan wujud akibat penyimpanan buruk">
+                        </datalist>
+                        <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
                 </div>
             </div>
             <div class="flex justify-end gap-2 mt-6 border-t pt-4">
@@ -397,8 +455,33 @@ document.addEventListener('DOMContentLoaded', () => {
                     </select>
                 </div>
                 <div>
-                    <label class="block mb-1 text-sm">Alasan</label>
-                    <input type="text" name="alasan" class="w-full border rounded p-2" placeholder="Contoh: Kadaluarsa" />
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Alasan Pengembalian</label>
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            id="alasan-pengembalian-input" 
+                            name="alasan" 
+                            list="alasan-pengembalian-list"
+                            class="w-full border border-gray-300 rounded-lg p-2.5 pr-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                            placeholder="Pilih atau ketik alasan..."
+                            autocomplete="off"
+                        />
+                        <datalist id="alasan-pengembalian-list">
+                            <option value="Rusak Saat Pengiriman - Kerusakan fisik saat diangkut">
+                            <option value="Salah Pesan/Kirim - Produk tidak sesuai pesanan">
+                            <option value="Mendekati Kedaluwarsa - Sisa expired kurang dari 3-6 bulan">
+                            <option value="Cacat Produk (Fisik) - Tablet retak atau cairan keruh">
+                            <option value="Penarikan Kembali (Recall) - Perintah BPOM/produsen">
+                            <option value="Kelebihan Stok - Tidak akan habis sebelum kedaluwarsa">
+                            <option value="Tidak Sesuai Suhu Penyimpanan - Terpapar suhu di luar batas">
+                            <option value="Kemasan Tidak Lengkap - Nomor batch/segel rusak">
+                            <option value="Perubahan Formula - Produk lama diganti formulasi baru">
+                            <option value="Penghentian Penjualan - Tidak lagi dijual produsen">
+                        </datalist>
+                        <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
                 </div>
             </div>
             <div class="flex justify-end gap-2 mt-6 border-t pt-4">
@@ -408,5 +491,37 @@ document.addEventListener('DOMContentLoaded', () => {
         </form>
     </div>
     </div>
+
+<!-- Modal Zoom Gambar -->
+<div id="image-modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/80" onclick="closeImageModal()">
+    <div class="relative max-w-4xl max-h-full p-4">
+        <button onclick="closeImageModal()" class="absolute top-2 right-2 text-white bg-red-600 hover:bg-red-700 rounded-full p-2 z-10">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+        <img id="modal-image" src="" alt="" class="max-w-full max-h-screen object-contain rounded-lg">
+        <p id="modal-title" class="text-white text-center mt-2 text-lg font-semibold"></p>
+    </div>
+</div>
+
+<script>
+    function showImageModal(imageSrc, title) {
+        const modal = document.getElementById('image-modal');
+        const modalImage = document.getElementById('modal-image');
+        const modalTitle = document.getElementById('modal-title');
+        
+        modalImage.src = imageSrc;
+        modalTitle.textContent = title;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeImageModal() {
+        const modal = document.getElementById('image-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+</script>
 </body>
 </html>

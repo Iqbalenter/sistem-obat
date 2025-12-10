@@ -15,7 +15,8 @@ class Obat extends Model
         'tanggal_expired',
         'stok',
         'supplier_id',
-        'status', // Tambahkan status
+        'status',
+        'gambar', // Tambahkan gambar
     ];
 
     protected $casts = [
@@ -33,5 +34,14 @@ class Obat extends Model
     public function supplier()
     {
         return $this->belongsTo(Supplier::class, 'supplier_id');
+    }
+
+    // Accessor untuk gambar
+    public function getGambarUrlAttribute()
+    {
+        if ($this->gambar) {
+            return asset('storage/' . $this->gambar);
+        }
+        return asset('images/no-image.png'); // Default image
     }
 }

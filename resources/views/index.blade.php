@@ -30,6 +30,24 @@
             <div class="mb-8">
                 <h1 class="text-3xl font-bold text-gray-900 mb-2">Dashboard Sistem Manajemen Obat 💊</h1>
                 <p class="text-gray-600">Selamat datang kembali! Berikut adalah ringkasan sistem Anda hari ini.</p>
+                
+                <!-- Info Sistem Slot Container -->
+                <div class="mt-4 p-4 bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-200 rounded-lg">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-lg font-semibold text-indigo-900">🗃️ Sistem Slot Container Aktif</h3>
+                            <p class="text-sm text-indigo-700">
+                                Sistem telah diperbarui menggunakan <span class="font-semibold">Slot Container 1-20</span> per block untuk menggantikan nomor antrian. 
+                                Setiap halaman menampilkan maksimal 20 slot container untuk memudahkan manajemen lokasi obat.
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Statistics Cards -->

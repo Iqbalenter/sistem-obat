@@ -61,13 +61,30 @@
                     @endif
                 </div>
 
+                <!-- Informasi Sistem Slot Container -->
+                <div class="mb-4 p-4 bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-200 rounded-lg">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="w-5 h-5 text-cyan-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-cyan-800">
+                                <span class="font-medium">Sistem Slot Container:</span> 
+                                Data supplier diorganisir dalam slot 1-20 per block untuk memudahkan manajemen dan referensi supplier.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Table -->
                 <div class="p-6">
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm text-left text-gray-500">
                             <thead class="text-xs text-gray-700 uppercase bg-gradient-to-r from-gray-50 to-gray-100">
                                 <tr>
-                                    <th scope="col" class="px-6 py-4 font-bold">No</th>
+                                    <th scope="col" class="px-6 py-4 font-bold">Slot Container</th>
                                     <th scope="col" class="px-6 py-4 font-bold">Nama Supplier</th>
                                     <th scope="col" class="px-6 py-4 font-bold">No Telepon</th>
                                     <th scope="col" class="px-6 py-4 font-bold">Alamat</th>
@@ -79,8 +96,8 @@
                                 @forelse($suppliers as $index => $supplier)
                                 <tr class="hover:bg-gray-50 transition-colors duration-200">
                                     <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                                        <span class="bg-cyan-100 text-cyan-800 px-3 py-1 rounded-full text-xs font-bold">
-                                            {{ ($suppliers->currentPage() - 1) * $suppliers->perPage() + $index + 1 }}
+                                        <span class="bg-gradient-to-r from-cyan-100 to-cyan-200 text-cyan-800 px-3 py-1 rounded-full text-xs font-bold">
+                                            Slot {{ ($index % 20) + 1 }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 font-medium text-gray-900">

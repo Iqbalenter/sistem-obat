@@ -6,6 +6,7 @@ use App\Models\Obat;
 use App\Models\Kategori;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ObatController extends Controller
 {
@@ -41,7 +42,8 @@ class ObatController extends Controller
             'kategori_id' => 'required|exists:kategoris,id',
             'supplier_id' => 'nullable|exists:suppliers,id',
             'tanggal_expired' => 'required|date|after:tanggal_masuk',
-            'stok' => 'required|integer|min:0'
+            'stok' => 'required|integer|min:0',
+            'gambar' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:2048' // Validasi gambar
         ], [
             'nama_obat.required' => 'Nama obat wajib diisi',
             'nama_obat.max' => 'Nama obat maksimal 255 karakter',
@@ -55,8 +57,19 @@ class ObatController extends Controller
             'tanggal_expired.after' => 'Tanggal expired harus setelah tanggal masuk',
             'stok.required' => 'Stok wajib diisi',
             'stok.integer' => 'Stok harus berupa angka',
-            'stok.min' => 'Stok tidak boleh kurang dari 0'
+            'stok.min' => 'Stok tidak boleh kurang dari 0',
+            'gambar.image' => 'File harus berupa gambar',
+            'gambar.mimes' => 'Gambar harus berformat: jpeg, jpg, png, gif, atau webp',
+            'gambar.max' => 'Ukuran gambar maksimal 2MB'
         ]);
+
+        // Handle upload gambar
+        $gambarPath = null;
+        if ($request->hasFile('gambar')) {
+            $gambar = $request->file('gambar');
+            $fileName = time() . '_' . uniqid() . '.' . $gambar->getClientOriginalExtension();
+            $gambarPath = $gambar->storeAs('obat', $fileName, 'public');
+        }
 
         Obat::create([
             'nama_obat' => $request->nama_obat,
@@ -66,6 +79,7 @@ class ObatController extends Controller
             'tanggal_expired' => $request->tanggal_expired,
             'stok' => $request->stok,
             'status' => 'dipertahankan',
+            'gambar' => $gambarPath,
         ]);
 
         return redirect()->route('obat.index')->with('success', 'Obat berhasil ditambahkan!');
@@ -104,7 +118,8 @@ class ObatController extends Controller
             'kategori_id' => 'required|exists:kategoris,id',
             'supplier_id' => 'nullable|exists:suppliers,id',
             'tanggal_expired' => 'required|date|after:tanggal_masuk',
-            'stok' => 'required|integer|min:0'
+            'stok' => 'required|integer|min:0',
+            'gambar' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:2048'
         ], [
             'nama_obat.required' => 'Nama obat wajib diisi',
             'nama_obat.max' => 'Nama obat maksimal 255 karakter',
@@ -118,8 +133,25 @@ class ObatController extends Controller
             'tanggal_expired.after' => 'Tanggal expired harus setelah tanggal masuk',
             'stok.required' => 'Stok wajib diisi',
             'stok.integer' => 'Stok harus berupa angka',
-            'stok.min' => 'Stok tidak boleh kurang dari 0'
+            'stok.min' => 'Stok tidak boleh kurang dari 0',
+            'gambar.image' => 'File harus berupa gambar',
+            'gambar.mimes' => 'Gambar harus berformat: jpeg, jpg, png, gif, atau webp',
+            'gambar.max' => 'Ukuran gambar maksimal 2MB'
         ]);
+
+        // Handle upload gambar baru
+        $gambarPath = $obat->gambar; // Tetap gunakan gambar lama
+        if ($request->hasFile('gambar')) {
+            // Hapus gambar lama jika ada
+            if ($obat->gambar && Storage::disk('public')->exists($obat->gambar)) {
+                Storage::disk('public')->delete($obat->gambar);
+            }
+            
+            // Upload gambar baru
+            $gambar = $request->file('gambar');
+            $fileName = time() . '_' . uniqid() . '.' . $gambar->getClientOriginalExtension();
+            $gambarPath = $gambar->storeAs('obat', $fileName, 'public');
+        }
 
         $obat->update([
             'nama_obat' => $request->nama_obat,
@@ -127,7 +159,8 @@ class ObatController extends Controller
             'kategori_id' => $request->kategori_id,
             'supplier_id' => $request->supplier_id,
             'tanggal_expired' => $request->tanggal_expired,
-            'stok' => $request->stok
+            'stok' => $request->stok,
+            'gambar' => $gambarPath,
         ]);
 
         // Jaga status tetap valid jika belum dipindahkan semua
@@ -145,6 +178,12 @@ class ObatController extends Controller
     public function destroy(string $id)
     {
         $obat = Obat::findOrFail($id);
+        
+        // Hapus gambar jika ada
+        if ($obat->gambar && Storage::disk('public')->exists($obat->gambar)) {
+            Storage::disk('public')->delete($obat->gambar);
+        }
+        
         $obat->delete();
 
         return redirect()->route('obat.index')->with('success', 'Obat berhasil dihapus!');

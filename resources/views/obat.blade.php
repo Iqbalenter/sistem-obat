@@ -118,13 +118,31 @@
                     @endif
                 </div>
 
+                <!-- Informasi Sistem Slot Container -->
+                <div class="mb-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-blue-800">
+                                <span class="font-medium">Sistem Slot Container:</span> 
+                                Setiap halaman menampilkan obat dalam slot 1-20. Setiap block berisi maksimal 20 slot container untuk memudahkan pengelolaan lokasi obat.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Table -->
                 <div class="p-6">
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm text-left text-gray-500">
                             <thead class="text-xs text-gray-700 uppercase bg-gradient-to-r from-gray-50 to-gray-100">
                                 <tr>
-                                    <th scope="col" class="px-6 py-4 font-bold">No</th>
+                                    <th scope="col" class="px-6 py-4 font-bold">Slot Container</th>
+                                    <th scope="col" class="px-6 py-4 font-bold">Gambar</th>
                                     <th scope="col" class="px-6 py-4 font-bold">Nama Obat</th>
                                     <th scope="col" class="px-6 py-4 font-bold">Kategori</th>
                                     <th scope="col" class="px-6 py-4 font-bold">Supplier</th>
@@ -139,9 +157,23 @@
                                 @forelse($obats as $index => $obat)
                                 <tr class="hover:bg-gray-50 transition-colors duration-200">
                                     <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                                        <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-bold">
-                                            {{ ($obats->currentPage() - 1) * $obats->perPage() + $index + 1 }}
+                                        <span class="bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 px-3 py-1 rounded-full text-xs font-bold">
+                                            Slot {{ ($index % 20) + 1 }}
                                         </span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        @if($obat->gambar)
+                                            <img src="{{ asset('storage/' . $obat->gambar) }}" 
+                                                 alt="{{ $obat->nama_obat }}" 
+                                                 class="w-16 h-16 object-cover rounded-lg shadow-md border border-gray-200 hover:scale-110 transition-transform duration-200 cursor-pointer"
+                                                 onclick="showImageModal('{{ asset('storage/' . $obat->gambar) }}', '{{ $obat->nama_obat }}')">
+                                        @else
+                                            <div class="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                                                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                </svg>
+                                            </div>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4 font-medium text-gray-900">{{ $obat->nama_obat }}</td>
                                     <td class="px-6 py-4">
@@ -215,7 +247,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="9" class="px-6 py-12 text-center">
+                                    <td colspan="10" class="px-6 py-12 text-center">
                                         <div class="flex flex-col items-center">
                                             <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -258,7 +290,7 @@
                         </svg>
                     </button>
                 </div>
-                <form class="p-4 md:p-5" action="{{ route('obat.store') }}" method="POST">
+                <form class="p-4 md:p-5" action="{{ route('obat.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="grid gap-4 mb-4 grid-cols-2">
                         <div class="col-span-2">
@@ -266,6 +298,26 @@
                             <input type="text" name="nama_obat" id="nama_obat" 
                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" 
                                    placeholder="Masukkan nama obat" required>
+                        </div>
+                        <div class="col-span-2">
+                            <label for="gambar" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                📷 Gambar Obat <span class="text-gray-500 text-xs">(Opsional, Max: 2MB)</span>
+                            </label>
+                            <div class="flex items-center justify-center w-full">
+                                <label for="gambar" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                        <svg class="w-8 h-8 mb-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                        </svg>
+                                        <p class="mb-1 text-sm text-gray-500"><span class="font-semibold">Klik untuk upload</span> atau drag & drop</p>
+                                        <p class="text-xs text-gray-500">PNG, JPG, JPEG, GIF, WEBP (MAX. 2MB)</p>
+                                    </div>
+                                    <input id="gambar" name="gambar" type="file" class="hidden" accept="image/*" onchange="previewImage(event, 'preview-add')" />
+                                </label>
+                            </div>
+                            <div id="preview-add" class="mt-2 hidden">
+                                <img src="" alt="Preview" class="w-full h-48 object-cover rounded-lg border border-gray-300">
+                            </div>
                         </div>
                         <div>
                             <label for="kategori_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Kategori</label>
@@ -330,7 +382,7 @@
                         </svg>
                     </button>
                 </div>
-                <form class="p-4 md:p-5" action="{{ route('obat.update', $obat->id) }}" method="POST">
+                <form class="p-4 md:p-5" action="{{ route('obat.update', $obat->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <div class="grid gap-4 mb-4 grid-cols-2">
@@ -340,6 +392,32 @@
                                    value="{{ $obat->nama_obat }}"
                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" 
                                    placeholder="Masukkan nama obat" required>
+                        </div>
+                        <div class="col-span-2">
+                            <label for="gambar_edit_{{ $obat->id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                📷 Gambar Obat <span class="text-gray-500 text-xs">(Opsional, Max: 2MB)</span>
+                            </label>
+                            @if($obat->gambar)
+                            <div class="mb-3">
+                                <p class="text-xs text-gray-600 mb-1">Gambar saat ini:</p>
+                                <img src="{{ asset('storage/' . $obat->gambar) }}" alt="Current" class="w-32 h-32 object-cover rounded-lg border border-gray-300">
+                            </div>
+                            @endif
+                            <div class="flex items-center justify-center w-full">
+                                <label for="gambar_edit_{{ $obat->id }}" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                        <svg class="w-8 h-8 mb-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                        </svg>
+                                        <p class="mb-1 text-sm text-gray-500"><span class="font-semibold">Klik untuk upload gambar baru</span></p>
+                                        <p class="text-xs text-gray-500">PNG, JPG, JPEG, GIF, WEBP (MAX. 2MB)</p>
+                                    </div>
+                                    <input id="gambar_edit_{{ $obat->id }}" name="gambar" type="file" class="hidden" accept="image/*" onchange="previewImage(event, 'preview-edit-{{ $obat->id }}')" />
+                                </label>
+                            </div>
+                            <div id="preview-edit-{{ $obat->id }}" class="mt-2 hidden">
+                                <img src="" alt="Preview" class="w-full h-48 object-cover rounded-lg border border-gray-300">
+                            </div>
                         </div>
                         <div>
                             <label for="kategori_id_edit_{{ $obat->id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Kategori</label>
@@ -426,6 +504,58 @@
     </div>
     @endforeach
     @endif
+
+    <!-- Modal Zoom Gambar -->
+    <div id="image-modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/80" onclick="closeImageModal()">
+        <div class="relative max-w-4xl max-h-full p-4">
+            <button onclick="closeImageModal()" class="absolute top-2 right-2 text-white bg-red-600 hover:bg-red-700 rounded-full p-2 z-10">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+            <img id="modal-image" src="" alt="" class="max-w-full max-h-screen object-contain rounded-lg">
+            <p id="modal-title" class="text-white text-center mt-2 text-lg font-semibold"></p>
+        </div>
+    </div>
+
+    <script>
+        // Preview image sebelum upload
+        function previewImage(event, previewId) {
+            const file = event.target.files[0];
+            const preview = document.getElementById(previewId);
+            const img = preview.querySelector('img');
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                    preview.classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
+            } else {
+                preview.classList.add('hidden');
+            }
+        }
+
+        // Show image modal zoom
+        function showImageModal(imageSrc, title) {
+            const modal = document.getElementById('image-modal');
+            const modalImage = document.getElementById('modal-image');
+            const modalTitle = document.getElementById('modal-title');
+            
+            modalImage.src = imageSrc;
+            modalTitle.textContent = title;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        // Close image modal
+        function closeImageModal() {
+            const modal = document.getElementById('image-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
 </body>

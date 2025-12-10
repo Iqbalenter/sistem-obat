@@ -63,9 +63,10 @@ class DashboardController extends Controller
                             ->limit(5)
                             ->get()
                             ->map(function($row){
+                                $namaObat = $row->obat?->nama_obat ?? $row->obat_nama ?? 'Obat (terhapus)';
                                 return [
                                     'action' => $row->jenis === 'pemusnahan' ? 'Obat dimusnahkan' : 'Obat dikembalikan',
-                                    'details' => $row->obat->nama_obat.' - '.$row->jumlah.' unit',
+                                    'details' => $namaObat.' - '.$row->jumlah.' unit',
                                     'time' => $row->created_at,
                                     'type' => $row->jenis === 'pemusnahan' ? 'danger' : 'info',
                                     'icon' => $row->jenis === 'pemusnahan' ? 'exclamation' : 'clock'
