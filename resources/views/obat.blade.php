@@ -96,26 +96,46 @@
 
             <!-- Main Content Card -->
             <div class="bg-white rounded-lg shadow-lg">
-                <!-- Header with Add Button -->
-                <div class="flex justify-between items-center p-6 border-b border-gray-200">
+                <!-- Header with Add Button + Search -->
+                <div class="flex gap-3 p-6 border-b border-gray-200 flex-row items-center justify-between">
                     <div>
                         <h2 class="text-xl font-bold text-gray-900">📋 Daftar Obat</h2>
                         <p class="text-gray-600 text-sm">Kelola data obat Anda dengan mudah</p>
                     </div>
-                    @if(Auth::user()->isAdmin() || Auth::user()->isPegawai())
-                    <button data-modal-target="add-obat-modal" data-modal-toggle="add-obat-modal" 
-                            class="text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-6 py-3 text-center shadow-lg transition-all duration-300 transform hover:scale-105">
-                        <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                        </svg>
-                        Tambah Obat
-                    </button>
-                    @else
-                    <div class="text-sm text-gray-500 bg-gray-100 px-4 py-2 rounded-lg">
-                        <span class="font-medium">Mode Lihat Saja</span>
-                        <p class="text-xs">Anda dapat melihat dan mencari data</p>
+                    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3 w-full lg:w-auto">
+                        <form action="{{ route('obat.index') }}" method="GET" class="w-full sm:w-80">
+                            <label for="search" class="sr-only">Cari obat</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1010.5 18.5c1.93 0 3.68-.71 5-1.85z"></path>
+                                    </svg>
+                                </div>
+                                <input type="text" id="search" name="search" value="{{ $search ?? '' }}"
+                                       class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 pr-10 py-2.5"
+                                       placeholder="Cari nama obat...">
+                                @if(!empty($search))
+                                    <a href="{{ route('obat.index') }}" class="absolute inset-y-0 right-0 flex items-center pr-5 text-gray-400 hover:text-gray-600">
+                                        ✕
+                                    </a>
+                                @endif
+                            </div>
+                        </form>
+                        @if(Auth::user()->isAdmin() || Auth::user()->isPegawai())
+                        <button data-modal-target="add-obat-modal" data-modal-toggle="add-obat-modal" 
+                                class="inline-flex items-center justify-center gap-2 text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 shadow-md transition-all duration-200">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            Tambah Obat
+                        </button>
+                        @else
+                        <div class="text-sm text-gray-500 bg-gray-100 px-4 py-2 rounded-lg">
+                            <span class="font-medium">Mode Lihat Saja</span>
+                            <p class="text-xs">Anda dapat melihat dan mencari data</p>
+                        </div>
+                        @endif
                     </div>
-                    @endif
                 </div>
 
                 <!-- Informasi Sistem Slot Container -->
@@ -158,7 +178,7 @@
                                 <tr class="hover:bg-gray-50 transition-colors duration-200">
                                     <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                                         <span class="bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 px-3 py-1 rounded-full text-xs font-bold">
-                                            Slot {{ ($index % 20) + 1 }}
+                                            Slot {{ (($loop->iteration - 1) % 20) + 1 }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4">

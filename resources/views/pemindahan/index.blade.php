@@ -74,7 +74,7 @@
                             <tr class="hover:bg-gray-50 transition-colors duration-200">
                                 <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                                     <span class="bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 px-3 py-1 rounded-full text-xs font-bold">
-                                        Slot {{ ($index % 20) + 1 }}
+                                        Slot {{ (($loop->iteration - 1) % 20) + 1 }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4">

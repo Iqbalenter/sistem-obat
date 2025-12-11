@@ -13,12 +13,20 @@ class ObatController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $obats = Obat::with(['kategori','supplier'])->latest()->paginate(10);
+        $search = $request->query('search');
+
+        $query = Obat::with(['kategori','supplier'])->latest();
+
+        if (!empty($search)) {
+            $query->where('nama_obat', 'like', '%' . $search . '%');
+        }
+
+        $obats = $query->paginate(10)->withQueryString();
         $kategoris = Kategori::all();
         $suppliers = Supplier::all();
-        return view('obat', compact('obats', 'kategoris', 'suppliers'));
+        return view('obat', compact('obats', 'kategoris', 'suppliers', 'search'));
     }
 
     /**

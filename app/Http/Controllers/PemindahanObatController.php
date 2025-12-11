@@ -13,18 +13,20 @@ class PemindahanObatController extends Controller
 {
     public function index()
     {
+        $perPage = max(1, request('per_page', 10)); // Pastikan minimal 1 item per page
+        
         $pemusnahan = PemindahanObat::with(['obat.kategori','supplier'])
             ->where('jenis', 'pemusnahan')
-            ->latest()->paginate(10, ['*'], 'pemusnahan_page');
+            ->latest()->paginate($perPage, ['*'], 'pemusnahan_page');
         $pengembalian = PemindahanObat::with(['obat.kategori','supplier'])
             ->where('jenis', 'pengembalian')
-            ->latest()->paginate(10, ['*'], 'pengembalian_page');
+            ->latest()->paginate($perPage, ['*'], 'pengembalian_page');
         // Daftar obat yang sudah kadaluarsa (expired)
         $expiredObats = Obat::with(['kategori','supplier'])
             ->whereDate('tanggal_expired', '<', now()->toDateString())
             ->whereNotIn('status', ['dimusnahkan','dikembalikan'])
             ->orderBy('tanggal_expired', 'asc')
-            ->paginate(10, ['*'], 'expired_page');
+            ->paginate($perPage, ['*'], 'expired_page');
 
         return view('pemindahan.index', compact('pemusnahan', 'pengembalian', 'expiredObats'));
     }
